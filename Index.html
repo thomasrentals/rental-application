@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rental Application</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+:root {
+  --navy: #0F1C2E;
+  --navy-mid: #1A2E45;
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --white: #FFFFFF;
+  --off-white: #F9FAFB;
+  --light-gray: #F3F4F6;
+  --border: #E5E7EB;
+  --text: #111827;
+  --muted: #6B7280;
+  --green: #059669;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1e3a5f 100%);
+  padding: 60px 24px 52px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 40px;
+  background: var(--off-white);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(38px, 6vw, 64px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--gold-light); }
+.hero p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 300;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.hero-divider {
+  width: 48px; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  margin: 20px auto;
+}
+
+/* PROGRESS */
+.progress-wrap {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.progress-inner {
+  max-width: 740px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.progress-label { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.progress-bar-track {
+  flex: 1; height: 6px;
+  background: var(--light-gray);
+  border-radius: 99px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.progress-pct { font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap; min-width: 36px; text-align: right; }
+
+/* FORM WRAPPER */
+.form-wrap { max-width: 740px; margin: 0 auto; padding: 48px 24px 80px; }
+
+/* SECTION CARDS */
+.section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  animation: fadeUp 0.5s ease both;
+}
+.section:nth-child(1){animation-delay:.05s}
+.section:nth-child(2){animation-delay:.1s}
+.section:nth-child(3){animation-delay:.15s}
+.section:nth-child(4){animation-delay:.2s}
+.section:nth-child(5){animation-delay:.25s}
+.section:nth-child(6){animation-delay:.3s}
+.section:nth-child(7){animation-delay:.35s}
+.section:nth-child(8){animation-delay:.4s}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 28px; padding-bottom: 18px;
+  border-bottom: 2px solid var(--light-gray);
+}
+.section-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.section-num { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: var(--navy); }
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.full { grid-column: 1 / -1; }
+@media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* FIELDS */
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field > label {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--navy);
+}
+.field > label .req { color: var(--gold); margin-left: 2px; }
+
+input[type="text"], input[type="email"], input[type="tel"],
+input[type="number"], input[type="date"], textarea, select {
+  width: 100%; padding: 13px 16px;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  color: var(--text); background: var(--white);
+  border: 1.5px solid var(--border); border-radius: 10px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  appearance: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(201,168,76,0.1);
+  background: #FFFDF7;
+}
+input::placeholder, textarea::placeholder { color: #C1C7D0; font-weight: 400; }
+textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23C9A84C' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center;
+  padding-right: 42px; cursor: pointer;
+}
+
+/* RADIO */
+.radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+.radio-option { position: relative; }
+.radio-option input[type="radio"] { position: absolute; opacity: 0; width: 0; }
+.radio-option label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 22px; font-size: 13.5px; font-weight: 600;
+  letter-spacing: 0.02em; text-transform: none;
+  color: var(--muted); background: var(--light-gray);
+  border: 1.5px solid transparent; border-radius: 10px;
+  cursor: pointer; transition: all 0.18s; user-select: none;
+}
+.radio-option input[type="radio"]:checked + label {
+  background: var(--navy); border-color: var(--navy);
+  color: var(--white); box-shadow: 0 4px 12px rgba(15,28,46,0.25);
+}
+.radio-option label:hover { border-color: var(--gold); color: var(--navy); background: #FFFBF0; }
+
+/* FILE UPLOAD */
+.upload-zone {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px; padding: 28px 20px;
+  background: var(--light-gray); border: 2px dashed var(--border);
+  border-radius: 12px; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.upload-zone:hover { border-color: var(--gold); background: #FFFBF0; }
+.upload-zone .upload-emoji { font-size: 32px; line-height: 1; }
+.upload-zone strong { font-size: 14px; font-weight: 600; color: var(--navy); }
+.upload-zone span { font-size: 12px; color: var(--muted); }
+input[type="file"] { display: none; }
+.file-chosen { font-size: 12.5px; font-weight: 600; color: var(--green); margin-top: 6px; min-height: 18px; }
+
+/* FEE CARD */
+.fee-card {
+  background: linear-gradient(135deg, #0F1C2E 0%, #1A2E45 100%);
+  border-radius: 14px; padding: 24px 26px;
+  display: flex; gap: 18px; align-items: flex-start;
+  margin-bottom: 24px; position: relative; overflow: hidden;
+}
+.fee-card::before {
+  content: ''; position: absolute; top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  background: rgba(201,168,76,0.08); border-radius: 50%;
+}
+.fee-amount-badge {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 10px; padding: 14px 18px;
+  text-align: center; flex-shrink: 0;
+}
+.fee-amount-badge .dollar { font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1; }
+.fee-amount-badge .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); opacity: 0.7; }
+.fee-info strong { display: block; font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+.fee-info p { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; font-weight: 300; }
+.fee-refund-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(5,150,105,0.2); border: 1px solid rgba(5,150,105,0.4);
+  border-radius: 50px; padding: 4px 12px;
+  font-size: 11px; font-weight: 600; color: #6EE7B7; margin-top: 10px;
+}
+
+/* SIGNATURE */
+.sig-box { border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--white); }
+.sig-hint {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px; font-size: 11px; color: var(--muted);
+  background: var(--light-gray); border-bottom: 1px solid var(--border);
+}
+#sig-canvas { display: block; width: 100%; height: 140px; cursor: crosshair; touch-action: none; }
+.sig-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; border-top: 1px solid var(--border); background: var(--light-gray);
+}
+.sig-footer span { font-size: 11px; color: var(--muted); }
+.sig-clear {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold); background: none; border: none; cursor: pointer;
+  padding: 4px 8px; border-radius: 6px; transition: background 0.15s;
+}
+.sig-clear:hover { background: rgba(201,168,76,0.1); }
+
+/* CONDITIONAL */
+.conditional { display: none; }
+.conditional.visible { display: flex; flex-direction: column; gap: 7px; }
+
+/* SUBMIT */
+.submit-section { text-align: center; padding: 16px 0 0; }
+.submit-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 18px 60px; font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--navy); background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border: none; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(201,168,76,0.35);
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(201,168,76,0.45); }
+.submit-btn:active { transform: translateY(0); }
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.submit-note { margin-top: 14px; font-size: 12px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 5px; }
+.submit-note::before { content: '🔒'; font-size: 13px; }
+
+/* SUCCESS */
+.success-msg {
+  display: none; background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #6EE7B7; border-radius: 14px;
+  padding: 32px; text-align: center; margin-top: 24px;
+}
+.success-msg .check { font-size: 48px; margin-bottom: 14px; }
+.success-msg strong { display: block; font-size: 20px; font-weight: 700; color: #065F46; margin-bottom: 8px; }
+.success-msg p { font-size: 14px; color: #047857; line-height: 1.6; }
+```
+
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🏠 Residential Leasing</div>
+  <h1>Rental <span>Application</span></h1>
+  <div class="hero-divider"></div>
+  <p>Please complete all required fields. Your information is handled with the utmost confidentiality.</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <span class="progress-label">Progress</span>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+</div>
+
+<div class="form-wrap">
+<form id="rentalForm" action="https://formspree.io/f/mlgpjyop" method="POST" enctype="multipart/form-data">
+
+  <!-- 01 Personal -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">👤</div>
+      <div>
+        <div class="section-num">Section 01</div>
+        <div class="section-title">Personal Information</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>First Name <span class="req">*</span></label><input type="text" name="first_name" placeholder="Jane" required/></div>
+      <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" name="last_name" placeholder="Doe" required/></div>
+      <div class="field"><label>Personal Email <span class="req">*</span></label><input type="email" name="email" placeholder="jane@email.com" required/></div>
+      <div class="field"><label>Phone Number <span class="req">*</span></label><input type="tel" name="phone" placeholder="(555) 000-0000" required/></div>
+      <div class="field"><label>Age <span class="req">*</span></label><input type="number" name="age" placeholder="25" min="18" max="120" required/></div>
+      <div class="field"><label>Desired Move-In Date <span class="req">*</span></label><input type="date" name="move_in_date" required/></div>
+      <div class="field full"><label>Current Address <span class="req">*</span></label><input type="text" name="address" placeholder="123 Main St, City, State, ZIP" required/></div>
+    </div>
+  </div>
+
+  <!-- 02 Employment -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💼</div>
+      <div>
+        <div class="section-num">Section 02</div>
+        <div class="section-title">Employment & Income</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Employer <span class="req">*</span></label><input type="text" name="employer" placeholder="Company Name" required/></div>
+      <div class="field"><label>Length of Employment <span class="req">*</span></label><input type="text" name="employment_length" placeholder="e.g. 2 years" required/></div>
+      <div class="field"><label>Employer's Phone Number <span class="req">*</span></label><input type="tel" name="employer_phone" placeholder="(555) 000-0000" required/></div>
+      <div class="field"><label>Monthly Income <span class="req">*</span></label><input type="text" name="monthly_income" placeholder="$0,000" required/></div>
+    </div>
+  </div>
+
+  <!-- 03 Occupants -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏡</div>
+      <div>
+        <div class="section-num">Section 03</div>
+        <div class="section-title">Occupants & Lifestyle</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="field"><label>Additional Occupants (Names & Ages) <span class="req">*</span></label><textarea name="occupants" placeholder="e.g. John Doe, 30 / Sarah Doe, 5" required></textarea></div>
+      <div class="field">
+        <label>Do you have pets? <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option"><input type="radio" name="pets" id="pets-yes" value="yes" onchange="toggle('pets-detail','yes','pets')"/><label for="pets-yes">🐾 Yes</label></div>
+          <div class="radio-option"><input type="radio" name="pets" id="pets-no" value="no" onchange="toggle('pets-detail','yes','pets')"/><label for="pets-no">No</label></div>
+        </div>
+      </div>
+      <div class="field conditional" id="pets-detail"><label>Specify type and how many <span class="req">*</span></label><input type="text" name="pets_detail" placeholder="e.g. 2 cats, 1 dog"/></div>
+      <div class="field">
+        <label>Do you smoke? <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option"><input type="radio" name="smoke" id="smoke-yes" value="yes"/><label for="smoke-yes">🚬 Yes</label></div>
+          <div class="radio-option"><input type="radio" name="smoke" id="smoke-no" value="no"/><label for="smoke-no">No</label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 Rental History -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div>
+        <div class="section-num">Section 04</div>
+        <div class="section-title">Rental History & Background</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="field">
+        <label>Have you ever been evicted? <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option"><input type="radio" name="evicted" id="ev-yes" value="yes"/><label for="ev-yes">Yes</label></div>
+          <div class="radio-option"><input type="radio" name="evicted" id="ev-no" value="no"/><label for="ev-no">No</label></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Bankruptcy? <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option"><input type="radio" name="bankruptcy" id="bk-yes" value="yes"/><label for="bk-yes">Yes</label></div>
+          <div class="radio-option"><input type="radio" name="bankruptcy" id="bk-no" value="no"/><label for="bk-no">No</label></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Do you have previous rental history? <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option"><input type="radio" name="rental_history" id="rh-yes" value="yes" onchange="toggle('rh-detail','yes','rental_history')"/><label for="rh-yes">Yes</label></div>
+          <div class="radio-option"><input type="radio" name="rental_history" id="rh-no" value="no" onchange="toggle('rh-detail','yes','rental_history')"/><label for="rh-no">No</label></div>
+        </div>
+      </div>
+      <div class="field conditional" id="rh-detail"><label>Provide landlord name & contact <span class="req">*</span></label><input type="text" name="landlord_contact" placeholder="Name, Phone or Email"/></div>
+      <div class="field"><label>Reason for Moving <span class="req">*</span></label><textarea name="reason_moving" placeholder="Please describe your reason for moving..." required></textarea></div>
+    </div>
+  </div>
+
+  <!-- 05 Lease & Payment -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📝</div>
+      <div>
+        <div class="section-num">Section 05</div>
+        <div class="section-title">Lease & Payment</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Preferred Lease <span class="req">*</span></label>
+        <select name="lease_type" required><option value="" disabled selected>Select…</option><option value="long">Long term</option><option value="short">Short term</option></select>
+      </div>
+      <div class="field"><label>Date to Pay Security Deposit <span class="req">*</span></label><input type="date" name="deposit_date" required/></div>
+      <div class="field full"><label>Payment Method <span class="req">*</span></label>
+        <select name="payment_method" required><option value="" disabled selected>Select…</option><option>Chime</option><option>Apple Pay</option><option>PayPal</option><option>Venmo</option><option>Cash App</option></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 Identification -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🪪</div>
+      <div>
+        <div class="section-num">Section 06</div>
+        <div class="section-title">Identification</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Driver's License <span class="req">*</span></label>
+      <label class="upload-zone" for="dl-upload">
+        <span class="upload-emoji">📷</span>
+        <strong>Tap or click to upload your Driver's License</strong>
+        <span>JPG, PNG, or PDF — max 10MB</span>
+      </label>
+      <input type="file" id="dl-upload" name="drivers_license" accept="image/*,.pdf" onchange="showFileName(this)" required/>
+      <div class="file-chosen" id="dl-filename"></div>
+    </div>
+  </div>
+
+  <!-- 07 Application Fee -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💳</div>
+      <div>
+        <div class="section-num">Section 07</div>
+        <div class="section-title">Application Fee</div>
+      </div>
+    </div>
+    <div class="fee-card">
+      <div class="fee-amount-badge">
+        <div class="dollar">$100</div>
+        <div class="lbl">Fee</div>
+      </div>
+      <div class="fee-info">
+        <strong>Application Processing Fee</strong>
+        <p>A $100 fee is required to process your application. Please send payment using one of the methods below before submitting.</p>
+        <div class="fee-refund-tag">✅ Fully refundable if you view the property and decide it's not the right fit</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field full"><label>Fee Payment Method <span class="req">*</span></label>
+        <select name="fee_payment_method" required><option value="" disabled selected>Select payment method…</option><option>Cash App</option><option>Zelle</option><option>Chime</option><option>Venmo</option><option>PayPal</option><option>Bank Transfer</option></select>
+      </div>
+      <div class="field full"><label>Transaction / Confirmation Number <span class="req">*</span></label>
+        <input type="text" name="fee_confirmation" placeholder="Enter transaction ID or reference number" required/>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 Signature -->
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">✍️</div>
+      <div>
+        <div class="section-num">Section 08</div>
+        <div class="section-title">Signature</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Sign Your Name Below <span class="req">*</span></label>
+      <div class="sig-box">
+        <div class="sig-hint">✏️ Draw your signature using mouse or finger</div>
+        <canvas id="sig-canvas"></canvas>
+        <div class="sig-footer">
+          <span>Sign within the box above</span>
+          <button type="button" class="sig-clear" onclick="clearSig()">✕ Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit -->
+
+  <div class="submit-section">
+    <button type="submit" class="submit-btn">Submit Application →</button>
+    <p class="submit-note">Your information is kept confidential and secure.</p>
+  </div>
+  <div class="success-msg" id="successMsg">
+    <div class="check">🎉</div>
+    <strong>Application Submitted Successfully!</strong>
+    <p>Thank you! We have received your application and will be in touch with you shortly.</p>
+  </div>
+
+</form>
+</div>
+
+<script>
+  function toggle(id, val, name) {
+    const el = document.getElementById(id);
+    const checked = document.querySelector(`input[name="${name}"]:checked`)?.value;
+    el.classList.toggle('visible', checked === val);
+    updateProgress();
+  }
+
+  function showFileName(input) {
+    document.getElementById('dl-filename').textContent = input.files[0] ? '✓ ' + input.files[0].name : '';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const allRequired = document.querySelectorAll('input[required], select[required], textarea[required]');
+    const radioNames = new Set();
+    let total = 0, done = 0;
+
+    allRequired.forEach(el => {
+      if (el.type === 'radio') {
+        if (!radioNames.has(el.name)) {
+          radioNames.add(el.name);
+          total++;
+          if (document.querySelector(`input[name="${el.name}"]:checked`)) done++;
+        }
+      } else if (el.type === 'file') {
+        total++;
+        if (el.files && el.files.length > 0) done++;
+      } else {
+        total++;
+        if (el.value.trim()) done++;
+      }
+    });
+
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+  }
+
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('input', updateProgress);
+    el.addEventListener('change', updateProgress);
+  });
+
+  // Signature
+  const canvas = document.getElementById('sig-canvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false, lastX = 0, lastY = 0;
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#0F1C2E';
+    ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return [src.clientX - rect.left, src.clientY - rect.top];
+  }
+
+  canvas.addEventListener('mousedown', e => { drawing = true; [lastX, lastY] = getPos(e); });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; [lastX, lastY] = getPos(e); }, { passive: false });
+  canvas.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    const [x, y] = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    [lastX, lastY] = [x, y];
+  });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault(); if (!drawing) return;
+    const [x, y] = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    [lastX, lastY] = [x, y];
+  }, { passive: false });
+  ['mouseup','mouseleave','touchend'].forEach(ev => canvas.addEventListener(ev, () => drawing = false));
+  function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+  // Submit
+  document.getElementById('rentalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    const btn = form.querySelector('.submit-btn');
+    btn.textContent = 'Submitting…';
+    btn.disabled = true;
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then(res => {
+      if (res.ok) {
+        document.getElementById('successMsg').style.display = 'block';
+        form.reset(); clearSig();
+        document.getElementById('dl-filename').textContent = '';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressPct').textContent = '100%';
+        document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        btn.textContent = 'Submit Application →';
+        btn.disabled = false;
+        alert('Something went wrong. Please try again.');
+      }
+    }).catch(() => {
+      btn.textContent = 'Submit Application →';
+      btn.disabled = false;
+      alert('Network error. Please check your connection and try again.');
+    });
+  });
+</script>
+
+</body>
+</html>
