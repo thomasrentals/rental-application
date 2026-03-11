@@ -331,7 +331,7 @@ input[type="file"] { display: none; }
 </div>
 
 <div class="form-wrap">
-<form id="rentalForm" action="https://formspree.io/f/mlgpjyop" method="POST" enctype="multipart/form-data">
+<form id="rentalForm" action="https://formspree.io/f/mlgpjyop" method="POST">
 
   <!-- 01 Personal -->
 
@@ -460,35 +460,13 @@ input[type="file"] { display: none; }
     </div>
   </div>
 
-  <!-- 06 Identification -->
-
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon">🪪</div>
-      <div>
-        <div class="section-num">Section 06</div>
-        <div class="section-title">Identification</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>Driver's License <span class="req">*</span></label>
-      <label class="upload-zone" for="dl-upload">
-        <span class="upload-emoji">📷</span>
-        <strong>Tap or click to upload your Driver's License</strong>
-        <span>JPG, PNG, or PDF — max 10MB</span>
-      </label>
-      <input type="file" id="dl-upload" name="drivers_license" accept="image/*,.pdf" onchange="showFileName(this)" required/>
-      <div class="file-chosen" id="dl-filename"></div>
-    </div>
-  </div>
-
-  <!-- 07 Application Fee -->
+  <!-- 06 Application Fee -->
 
   <div class="section">
     <div class="section-header">
       <div class="section-icon">💳</div>
       <div>
-        <div class="section-num">Section 07</div>
+        <div class="section-num">Section 06</div>
         <div class="section-title">Application Fee</div>
       </div>
     </div>
@@ -513,13 +491,13 @@ input[type="file"] { display: none; }
     </div>
   </div>
 
-  <!-- 08 Signature -->
+  <!-- 07 Signature -->
 
   <div class="section">
     <div class="section-header">
       <div class="section-icon">✍️</div>
       <div>
-        <div class="section-num">Section 08</div>
+        <div class="section-num">Section 07</div>
         <div class="section-title">Signature</div>
       </div>
     </div>
@@ -651,7 +629,6 @@ input[type="file"] { display: none; }
       if (res.ok) {
         document.getElementById('successMsg').style.display = 'block';
         form.reset(); clearSig();
-        document.getElementById('dl-filename').textContent = '';
         document.getElementById('progressFill').style.width = '100%';
         document.getElementById('progressPct').textContent = '100%';
         document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth' });
