@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Portal — Thomas Rentals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#0F1C2E;--navy-mid:#1A2E45;--gold:#C9A84C;--gold-light:#E8C97A;--white:#FFFFFF;--bg:#F3F4F6;--border:#E5E7EB;--text:#111827;--muted:#6B7280;--green:#059669;--red:#DC2626;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+
+/* LOGIN SCREEN */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);padding:24px;}
+.login-card{background:white;border-radius:20px;padding:40px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .icon{width:56px;height:56px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px;}
+.login-logo h1{font-size:22px;font-weight:800;color:var(--navy);}
+.login-logo p{font-size:13px;color:var(--muted);margin-top:4px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.form-group input,select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;}
+.form-group input:focus{border-color:var(--navy);}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+#loginError{display:none;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:16px;}
+
+/* ADMIN DASHBOARD */
+#adminScreen{display:none;}
+.topbar{background:var(--navy);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.topbar-title{font-size:16px;font-weight:800;color:white;}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.badge-admin{background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--gold-light);}
+.btn-signout{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'Inter',sans-serif;}
+
+.main{max-width:800px;margin:0 auto;padding:32px 24px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+.stat-num{font-size:28px;font-weight:800;color:var(--navy);}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;}
+
+/* ADD/UPDATE FORM */
+.card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;}
+.card-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);background:white;outline:none;}
+.btn-save{padding:13px 32px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-delete{padding:8px 16px;background:#FEE2E2;color:var(--red);border:1px solid #FCA5A5;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+.save-msg{display:none;background:#D1FAE5;border:1px solid #6EE7B7;border-radius:8px;padding:10px 14px;font-size:13px;color:#065F46;font-weight:600;margin-top:12px;}
+
+/* APPLICANTS TABLE */
+.applicant-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--border);border-radius:12px;margin-bottom:10px;background:#FAFAFA;flex-wrap:wrap;gap:10px;}
+.app-info{}
+.app-email{font-size:14px;font-weight:600;color:var(--navy);}
+.app-name{font-size:12px;color:var(--muted);margin-top:2px;}
+.app-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.status-pending{background:#FEF3C7;color:#92400E;}
+.status-review{background:#DBEAFE;color:#1E40AF;}
+.status-approved{background:#D1FAE5;color:#065F46;}
+.status-denied{background:#FEE2E2;color:#991B1B;}
+.status-moreinfo{background:#FFEDD5;color:#9A3412;}
+.empty-state{text-align:center;padding:40px;color:var(--muted);}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px;}
+
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .grid2{grid-template-columns:1fr;}
+}
+```
+
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">🏠</div>
+      <h1>Admin Portal</h1>
+      <p>Thomas Rentals · Authorized Access Only</p>
+    </div>
+    <div id="loginError">Incorrect password. Please try again.</div>
+    <div class="form-group">
+      <label>Admin Password</label>
+      <input type="password" id="adminPassword" placeholder="Enter admin password" onkeypress="if(event.key==='Enter')doAdminLogin()"/>
+    </div>
+    <button class="btn-primary" onclick="doAdminLogin()">🔐 Access Admin Portal</button>
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px;">🔒 This page is restricted. Unauthorized access is prohibited.</p>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+
+<div id="adminScreen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">🏠</div>
+      <div>
+        <div class="topbar-title">Thomas Rentals</div>
+        <div class="topbar-sub">Application Management Portal</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="badge-admin">⚡ ADMIN</div>
+      <button class="btn-signout" onclick="adminSignOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+```
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-num" id="statTotal">0</div>
+    <div class="stat-label">Total Applications</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#F7B500;" id="statPending">0</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#059669;" id="statApproved">0</div>
+    <div class="stat-label">Approved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#DC2626;" id="statDenied">0</div>
+    <div class="stat-label">Denied</div>
+  </div>
+</div>
+
+<!-- Add / Update Application -->
+<div class="card">
+  <div class="card-title">➕ Add or Update Applicant Status</div>
+  <div class="grid2">
+    <div class="form-group">
+      <label>Applicant Full Name</label>
+      <input type="text" id="inputName" placeholder="John Smith"/>
+    </div>
+    <div class="form-group">
+      <label>Applicant Email</label>
+      <input type="email" id="inputEmail" placeholder="applicant@email.com"/>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="form-group">
+      <label>Application Status</label>
+      <select id="inputStatus">
+        <option value="pending">⏳ Pending Review</option>
+        <option value="review">📋 Under Review</option>
+        <option value="approved">✅ Approved</option>
+        <option value="denied">❌ Not Approved</option>
+        <option value="moreinfo">📝 More Info Needed</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="text" id="inputDate" placeholder="e.g. March 12, 2026"/>
+    </div>
+  </div>
+  <button class="btn-save" onclick="saveApplicant()">💾 Save Applicant</button>
+  <div class="save-msg" id="saveMsg">✅ Applicant saved successfully!</div>
+</div>
+
+<!-- Applicants List -->
+<div class="card">
+  <div class="card-title">👥 All Applicants <span style="font-size:13px;font-weight:400;color:var(--muted);" id="appCount"></span></div>
+  <div id="applicantsList">
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No applicants yet</div>
+      <div style="font-size:13px;">Add applicants above to manage their status.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Code to copy -->
+<div class="card" style="background:#0F1C2E;border-color:#1A2E45;">
+  <div class="card-title" style="color:white;">📋 Copy This Code to Your Application Page</div>
+  <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.6;">After saving applicants, copy the code below and paste it into your rental application page (index.html on GitHub) replacing the <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;color:#E8C97A;">applicationStatuses = {}</code> section.</p>
+  <textarea id="codeOutput" readonly rows="8" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px;font-family:monospace;font-size:12px;color:#E8C97A;resize:vertical;outline:none;"></textarea>
+  <button onclick="copyCode()" style="margin-top:12px;padding:10px 24px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);border-radius:8px;color:var(--gold-light);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" id="copyCodeBtn">📋 Copy Code</button>
+</div>
+```
+
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = 'ThomasRentals2026!';
+
+function doAdminLogin(){
+  const pwd = document.getElementById('adminPassword').value;
+  if(pwd === ADMIN_PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminScreen').style.display='block';
+    loadApplicants();
+    // Set today's date
+    const today = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    document.getElementById('inputDate').value = today;
+  } else {
+    document.getElementById('loginError').style.display='block';
+  }
+}
+
+function adminSignOut(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('adminScreen').style.display='none';
+  document.getElementById('adminPassword').value='';
+  document.getElementById('loginError').style.display='none';
+}
+
+function getApplicants(){
+  try{ return JSON.parse(localStorage.getItem('tr_applicants')||'{}'); }
+  catch(e){ return {}; }
+}
+
+function saveApplicant(){
+  const name = document.getElementById('inputName').value.trim();
+  const email = document.getElementById('inputEmail').value.trim().toLowerCase();
+  const status = document.getElementById('inputStatus').value;
+  const date = document.getElementById('inputDate').value.trim();
+  if(!name||!email||!date){ alert('Please fill in all fields.'); return; }
+
+  const apps = getApplicants();
+  apps[email] = {name, status, date};
+  localStorage.setItem('tr_applicants', JSON.stringify(apps));
+
+  document.getElementById('saveMsg').style.display='block';
+  setTimeout(()=>document.getElementById('saveMsg').style.display='none', 3000);
+  document.getElementById('inputName').value='';
+  document.getElementById('inputEmail').value='';
+  document.getElementById('inputStatus').value='pending';
+
+  loadApplicants();
+}
+
+function deleteApplicant(email){
+  if(!confirm('Remove this applicant?')) return;
+  const apps = getApplicants();
+  delete apps[email];
+  localStorage.setItem('tr_applicants', JSON.stringify(apps));
+  loadApplicants();
+}
+
+function loadApplicants(){
+  const apps = getApplicants();
+  const keys = Object.keys(apps);
+  const list = document.getElementById('applicantsList');
+
+  // Update stats
+  document.getElementById('statTotal').textContent = keys.length;
+  document.getElementById('statPending').textContent = keys.filter(k=>apps[k].status==='pending'||apps[k].status==='review').length;
+  document.getElementById('statApproved').textContent = keys.filter(k=>apps[k].status==='approved').length;
+  document.getElementById('statDenied').textContent = keys.filter(k=>apps[k].status==='denied').length;
+  document.getElementById('appCount').textContent = `(${keys.length})`;
+
+  if(!keys.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div style="font-size:15px;font-weight:600;margin-bottom:6px;">No applicants yet</div><div style="font-size:13px;">Add applicants above to manage their status.</div></div>`;
+    updateCodeOutput({});
+    return;
+  }
+
+  const statusLabels = {pending:'⏳ Pending Review',review:'📋 Under Review',approved:'✅ Approved',denied:'❌ Not Approved',moreinfo:'📝 More Info Needed'};
+  const statusClasses = {pending:'status-pending',review:'status-review',approved:'status-approved',denied:'status-denied',moreinfo:'status-moreinfo'};
+
+  list.innerHTML = keys.map(email=>{
+    const a = apps[email];
+    return `
+    <div class="applicant-row">
+      <div class="app-info">
+        <div class="app-email">${email}</div>
+        <div class="app-name">${a.name}</div>
+        <div class="app-date">Updated: ${a.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="status-badge ${statusClasses[a.status]||'status-pending'}">${statusLabels[a.status]||'Pending'}</span>
+        <button class="btn-delete" onclick="deleteApplicant('${email}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateCodeOutput(apps);
+}
+
+function updateCodeOutput(apps){
+  const code = `const applicationStatuses = ${JSON.stringify(apps, null, 2)};`;
+  document.getElementById('codeOutput').value = code;
+}
+
+function copyCode(){
+  const ta = document.getElementById('codeOutput');
+  ta.select();
+  document.execCommand('copy');
+  document.getElementById('copyCodeBtn').textContent = '✅ Copied!';
+  setTimeout(()=>document.getElementById('copyCodeBtn').textContent='📋 Copy Code', 2000);
+}
+</script>
+
+</body>
+</html>
