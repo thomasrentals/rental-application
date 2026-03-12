@@ -318,6 +318,9 @@ input[type="file"] { display: none; }
   <h1>Rental <span>Application</span></h1>
   <div class="hero-divider"></div>
   <p>Please complete all required fields. Your information is handled with the utmost confidentiality.</p>
+  <div style="margin-top:24px;">
+    <a href="#status-checker" style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.35);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:600;color:var(--gold-light);text-decoration:none;letter-spacing:0.05em;">🔍 Already Applied? Check Your Status</a>
+  </div>
 </div>
 
 <div class="progress-wrap">
@@ -514,6 +517,8 @@ input[type="file"] { display: none; }
     </div>
   </div>
 
+  </div>
+
   <!-- Submit -->
 
   <div class="submit-section">
@@ -527,6 +532,81 @@ input[type="file"] { display: none; }
   </div>
 
 </form>
+</div>
+
+<!-- APPLICATION STATUS CHECKER -->
+
+<div id="status-checker" style="background:var(--navy);padding:60px 24px;">
+  <div style="max-width:540px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:50px;padding:6px 16px;font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Application Portal</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:white;margin-bottom:10px;">Check Your Application</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;">Enter the email address you used when applying to see your current status.</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Email Address</label>
+        <input id="statusEmail" type="email" placeholder="Enter your email address..." style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:white;outline:none;"/>
+      </div>
+      <button onclick="checkStatus()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.04em;">🔍 Check My Application Status</button>
+      <div id="statusResult" style="display:none;margin-top:20px;"></div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);margin-top:16px;">🔒 Your information is secure and confidential</p>
+  </div>
+</div>
+
+<!-- Report Suspicious Activity -->
+
+<div style="background:#F9FAFB;padding:60px 24px;">
+  <div style="max-width:740px;margin:0 auto;">
+    <div style="background:linear-gradient(135deg,#0F1C2E 0%,#1A2E45 100%);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.12);">
+      <!-- Header -->
+      <div style="padding:24px 28px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:14px;">
+        <div style="width:48px;height:48px;background:rgba(220,38,38,0.15);border:1.5px solid rgba(220,38,38,0.4);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🚨</div>
+        <div>
+          <div style="font-size:17px;font-weight:700;color:#FFFFFF;letter-spacing:-0.01em;">Report Suspicious Activity</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">All reports are strictly confidential and investigated within 24–48 hours</div>
+        </div>
+        <div style="margin-left:auto;background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#FCA5A5;white-space:nowrap;">SECURE REPORT</div>
+      </div>
+      <!-- Body -->
+      <div style="padding:24px 28px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Your Name</label>
+            <input id="reportName" type="text" placeholder="Full name" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:white;outline:none;"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Your Email</label>
+            <input id="reportEmail" type="email" placeholder="your@email.com" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:white;outline:none;"/>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Type of Suspicious Activity</label>
+          <select id="reportType" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:white;outline:none;">
+            <option value="" style="background:#0F1C2E;">Select activity type...</option>
+            <option style="background:#0F1C2E;">Identity Theft / Fraud</option>
+            <option style="background:#0F1C2E;">Fake Documents Submitted</option>
+            <option style="background:#0F1C2E;">Harassment or Threats</option>
+            <option style="background:#0F1C2E;">Misrepresentation of Information</option>
+            <option style="background:#0F1C2E;">Unauthorized Access</option>
+            <option style="background:#0F1C2E;">Other</option>
+          </select>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Describe the Activity</label>
+          <textarea id="reportDesc" placeholder="Please provide as much detail as possible including dates, names, and any evidence..." rows="4" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:white;outline:none;resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <button type="button" onclick="submitReport()" style="padding:12px 28px;background:linear-gradient(135deg,#DC2626,#991B1B);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">🚨 Submit Confidential Report</button>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.4);">
+            <span>🔒</span>
+            <span>Your identity is protected. Reports are encrypted and reviewed by our compliance team.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -613,6 +693,28 @@ input[type="file"] { display: none; }
   ['mouseup','mouseleave','touchend'].forEach(ev => canvas.addEventListener(ev, () => drawing = false));
   function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
+  // Submit Report
+  function submitReport(){
+    const name=document.getElementById('reportName').value.trim();
+    const email=document.getElementById('reportEmail').value.trim();
+    const type=document.getElementById('reportType').value;
+    const desc=document.getElementById('reportDesc').value.trim();
+    if(!name||!email||!type||!desc){alert('Please fill in all fields in the report section.');return;}
+    fetch('https://formspree.io/f/mlgpjyop',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({type:'🚨 SUSPICIOUS ACTIVITY REPORT',reporter_name:name,reporter_email:email,activity_type:type,description:desc})
+    }).then(res=>{
+      if(res.ok){
+        document.getElementById('reportSuccess').style.display='block';
+        document.getElementById('reportName').value='';
+        document.getElementById('reportEmail').value='';
+        document.getElementById('reportType').value='';
+        document.getElementById('reportDesc').value='';
+      } else { alert('Something went wrong. Please try again.'); }
+    }).catch(()=>alert('Network error. Please try again.'));
+  }
+
   // Submit
   document.getElementById('rentalForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -643,6 +745,57 @@ input[type="file"] { display: none; }
       alert('Network error. Please check your connection and try again.');
     });
   });
+</script>
+
+<script>
+const applicationStatuses = {};
+
+function checkStatus(){
+  const email = document.getElementById('statusEmail').value.trim().toLowerCase();
+  const result = document.getElementById('statusResult');
+  if(!email){ alert('Please enter your email address.'); return; }
+  const app = applicationStatuses[email];
+  if(!app){
+    result.style.display='block';
+    result.innerHTML=`
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:10px;">🔍</div>
+        <div style="font-size:15px;font-weight:700;color:white;margin-bottom:6px;">No Application Found</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;">We couldn't find an application with this email. Please double-check the email you used when applying.</div>
+      </div>`;
+    return;
+  }
+  const statusConfig = {
+    pending:  {color:'#F7B500',bg:'rgba(247,181,0,0.1)',border:'rgba(247,181,0,0.3)',icon:'⏳',label:'Pending Review',msg:'Your application has been received and is awaiting review. You will be notified within 3–5 business days.'},
+    review:   {color:'#00D4FF',bg:'rgba(0,212,255,0.1)',border:'rgba(0,212,255,0.3)',icon:'📋',label:'Under Review',msg:'Your application is currently being reviewed by our team. We will contact you shortly with a decision.'},
+    approved: {color:'#00E676',bg:'rgba(0,230,118,0.1)',border:'rgba(0,230,118,0.3)',icon:'✅',label:'Approved',msg:'Congratulations! Your application has been approved. Please check your email for next steps and lease signing instructions.'},
+    denied:   {color:'#FF3D57',bg:'rgba(255,61,87,0.1)',border:'rgba(255,61,87,0.3)',icon:'❌',label:'Not Approved',msg:'Unfortunately your application was not approved at this time. Please contact us for more information.'},
+    moreinfo: {color:'#FF6B00',bg:'rgba(255,107,0,0.1)',border:'rgba(255,107,0,0.3)',icon:'📝',label:'More Info Needed',msg:'We need additional information to process your application. Please check your email for details on what is required.'},
+  };
+  const s = statusConfig[app.status]||statusConfig['pending'];
+  result.style.display='block';
+  result.innerHTML=`
+    <div style="background:${s.bg};border:1px solid ${s.border};border-radius:12px;padding:20px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div style="font-size:32px;">${s.icon}</div>
+        <div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Application Status</div>
+          <div style="font-size:20px;font-weight:800;color:${s.color};">${s.label}</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">Applicant</span>
+          <span style="font-size:12px;font-weight:600;color:white;">${app.name}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">Last Updated</span>
+          <span style="font-size:12px;font-weight:600;color:white;">${app.date}</span>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;">${s.msg}</div>
+      </div>
+    </div>`;
+}
 </script>
 
 </body>
