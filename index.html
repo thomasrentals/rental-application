@@ -35,7 +35,8 @@ body {
 
 /* HERO */
 .hero {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1e3a5f 100%);
+  background: #0F1C2E !important;
+  background: linear-gradient(135deg, #0F1C2E 0%, #1A2E45 60%, #1e3a5f 100%) !important;
   padding: 60px 24px 52px;
   text-align: center;
   position: relative;
@@ -46,7 +47,7 @@ body {
   position: absolute;
   bottom: -1px; left: 0; right: 0;
   height: 40px;
-  background: var(--off-white);
+  background: #F9FAFB;
   clip-path: ellipse(55% 100% at 50% 100%);
 }
 .hero-badge {
@@ -61,7 +62,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #E8C97A;
+  color: #E8C97A !important;
   margin-bottom: 20px;
 }
 .hero h1 {
@@ -80,6 +81,12 @@ body {
   max-width: 480px;
   margin: 0 auto;
   line-height: 1.6;
+}
+.hero-divider {
+  width: 48px; height: 3px;
+  background: linear-gradient(90deg, #C9A84C, #E8C97A);
+  border-radius: 2px;
+  margin: 20px auto;
 }
 .hero-divider {
   width: 48px; height: 3px;
