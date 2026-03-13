@@ -752,54 +752,79 @@ input[type="file"] { display: none; }
   });
 </script>
 
-<script>
-const applicationStatuses = {};
+<!-- Firebase SDK -->
 
-function checkStatus(){
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBxfpcwENzs6_Eo_pXFsdEiUTxB8MoG-qE",
+  authDomain: "thomas-rentals.firebaseapp.com",
+  projectId: "thomas-rentals",
+  storageBucket: "thomas-rentals.firebasestorage.app",
+  messagingSenderId: "631219269923",
+  appId: "1:631219269923:web:0e82e63b830ee8887adc96",
+  measurementId: "G-L8XCT5ECHG"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+window.checkStatus = async function(){
   const email = document.getElementById('statusEmail').value.trim().toLowerCase();
   const result = document.getElementById('statusResult');
   if(!email){ alert('Please enter your email address.'); return; }
-  const app = applicationStatuses[email];
-  if(!app){
-    result.style.display='block';
-    result.innerHTML=`
-      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;text-align:center;">
-        <div style="font-size:36px;margin-bottom:10px;">🔍</div>
-        <div style="font-size:15px;font-weight:700;color:white;margin-bottom:6px;">No Application Found</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;">We couldn't find an application with this email. Please double-check the email you used when applying.</div>
-      </div>`;
-    return;
-  }
-  const statusConfig = {
-    pending:  {color:'#F7B500',bg:'rgba(247,181,0,0.1)',border:'rgba(247,181,0,0.3)',icon:'⏳',label:'Pending Review',msg:'Your application has been received and is awaiting review. You will be notified within 3–5 business days.'},
-    review:   {color:'#00D4FF',bg:'rgba(0,212,255,0.1)',border:'rgba(0,212,255,0.3)',icon:'📋',label:'Under Review',msg:'Your application is currently being reviewed by our team. We will contact you shortly with a decision.'},
-    approved: {color:'#00E676',bg:'rgba(0,230,118,0.1)',border:'rgba(0,230,118,0.3)',icon:'✅',label:'Approved',msg:'Congratulations! Your application has been approved. Please check your email for next steps and lease signing instructions.'},
-    denied:   {color:'#FF3D57',bg:'rgba(255,61,87,0.1)',border:'rgba(255,61,87,0.3)',icon:'❌',label:'Not Approved',msg:'Unfortunately your application was not approved at this time. Please contact us for more information.'},
-    moreinfo: {color:'#FF6B00',bg:'rgba(255,107,0,0.1)',border:'rgba(255,107,0,0.3)',icon:'📝',label:'More Info Needed',msg:'We need additional information to process your application. Please check your email for details on what is required.'},
-  };
-  const s = statusConfig[app.status]||statusConfig['pending'];
+
   result.style.display='block';
-  result.innerHTML=`
-    <div style="background:${s.bg};border:1px solid ${s.border};border-radius:12px;padding:20px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div style="font-size:32px;">${s.icon}</div>
-        <div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Application Status</div>
-          <div style="font-size:20px;font-weight:800;color:${s.color};">${s.label}</div>
+  result.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.5);">🔍 Looking up your application...</div>';
+
+  try {
+    const docRef = doc(db, 'applicants', email);
+    const docSnap = await getDoc(docRef);
+
+    if(!docSnap.exists()){
+      result.innerHTML=`
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;text-align:center;">
+          <div style="font-size:36px;margin-bottom:10px;">🔍</div>
+          <div style="font-size:15px;font-weight:700;color:white;margin-bottom:6px;">No Application Found</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;">We couldn't find an application with this email. Please double-check the email you used when applying.</div>
+        </div>`;
+      return;
+    }
+
+    const app = docSnap.data();
+    const statusConfig = {
+      pending:  {color:'#F7B500',bg:'rgba(247,181,0,0.1)',border:'rgba(247,181,0,0.3)',icon:'⏳',label:'Pending Review',msg:'Your application has been received and is awaiting review. You will be notified within 3–5 business days.'},
+      review:   {color:'#00D4FF',bg:'rgba(0,212,255,0.1)',border:'rgba(0,212,255,0.3)',icon:'📋',label:'Under Review',msg:'Your application is currently being reviewed by our team. We will contact you shortly with a decision.'},
+      approved: {color:'#00E676',bg:'rgba(0,230,118,0.1)',border:'rgba(0,230,118,0.3)',icon:'✅',label:'Approved',msg:'Congratulations! Your application has been approved. Please check your email for next steps and lease signing instructions.'},
+      denied:   {color:'#FF3D57',bg:'rgba(255,61,87,0.1)',border:'rgba(255,61,87,0.3)',icon:'❌',label:'Not Approved',msg:'Unfortunately your application was not approved at this time. Please contact us for more information.'},
+      moreinfo: {color:'#FF6B00',bg:'rgba(255,107,0,0.1)',border:'rgba(255,107,0,0.3)',icon:'📝',label:'More Info Needed',msg:'We need additional information to process your application. Please check your email for details on what is required.'},
+    };
+    const s = statusConfig[app.status]||statusConfig['pending'];
+    result.innerHTML=`
+      <div style="background:${s.bg};border:1px solid ${s.border};border-radius:12px;padding:20px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="font-size:32px;">${s.icon}</div>
+          <div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Application Status</div>
+            <div style="font-size:20px;font-weight:800;color:${s.color};">${s.label}</div>
+          </div>
         </div>
-      </div>
-      <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:12px;color:rgba(255,255,255,0.4);">Applicant</span>
-          <span style="font-size:12px;font-weight:600;color:white;">${app.name}</span>
+        <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:12px;color:rgba(255,255,255,0.4);">Applicant</span>
+            <span style="font-size:12px;font-weight:600;color:white;">${app.name}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+            <span style="font-size:12px;color:rgba(255,255,255,0.4);">Last Updated</span>
+            <span style="font-size:12px;font-weight:600;color:white;">${app.date}</span>
+          </div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;">${s.msg}</div>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-          <span style="font-size:12px;color:rgba(255,255,255,0.4);">Last Updated</span>
-          <span style="font-size:12px;font-weight:600;color:white;">${app.date}</span>
-        </div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;">${s.msg}</div>
-      </div>
-    </div>`;
+      </div>`;
+  } catch(err) {
+    result.innerHTML='<div style="text-align:center;padding:20px;color:#FCA5A5;">⚠️ Error loading status. Please try again.</div>';
+  }
 }
 </script>
 
