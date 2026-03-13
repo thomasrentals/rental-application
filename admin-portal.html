@@ -306,5 +306,101 @@ function copyCode(){
 }
 </script>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBxfpcwENzs6_Eo_pXFsdEiUTxB8MoG-qE",
+  authDomain: "thomas-rentals.firebaseapp.com",
+  projectId: "thomas-rentals",
+  storageBucket: "thomas-rentals.firebasestorage.app",
+  messagingSenderId: "631219269923",
+  appId: "1:631219269923:web:0e82e63b830ee8887adc96",
+  measurementId: "G-L8XCT5ECHG"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+const statusLabels = {pending:'⏳ Pending Review',review:'📋 Under Review',approved:'✅ Approved',denied:'❌ Not Approved',moreinfo:'📝 More Info Needed'};
+const statusClasses = {pending:'status-pending',review:'status-review',approved:'status-approved',denied:'status-denied',moreinfo:'status-moreinfo'};
+
+async function loadApplicants(){
+  const list = document.getElementById('applicantsList');
+  list.innerHTML='<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.4);">Loading...</div>';
+  const snap = await getDocs(collection(db,'applicants'));
+  const apps = {};
+  snap.forEach(d=>{ apps[d.id]=d.data(); });
+  const keys = Object.keys(apps);
+
+  document.getElementById('statTotal').textContent = keys.length;
+  document.getElementById('statPending').textContent = keys.filter(k=>apps[k].status==='pending'||apps[k].status==='review').length;
+  document.getElementById('statApproved').textContent = keys.filter(k=>apps[k].status==='approved').length;
+  document.getElementById('statDenied').textContent = keys.filter(k=>apps[k].status==='denied').length;
+  document.getElementById('appCount').textContent = `(${keys.length})`;
+
+  if(!keys.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div style="font-size:15px;font-weight:600;margin-bottom:6px;">No applicants yet</div><div style="font-size:13px;">Add applicants above to track their status.</div></div>`;
+    return;
+  }
+  list.innerHTML = keys.map(email=>{
+    const a=apps[email];
+    return `
+    <div class="applicant-row">
+      <div class="app-info">
+        <div class="app-email">${email}</div>
+        <div class="app-name">${a.name}</div>
+        <div class="app-date">Updated: ${a.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="status-badge ${statusClasses[a.status]||'status-pending'}">${statusLabels[a.status]||'Pending'}</span>
+        <button class="btn-delete" onclick="window.deleteApplicant('${email}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.saveApplicant = async function(){
+  const name = document.getElementById('inputName').value.trim();
+  const email = document.getElementById('inputEmail').value.trim().toLowerCase();
+  const status = document.getElementById('inputStatus').value;
+  const date = document.getElementById('inputDate').value.trim();
+  if(!name||!email||!date){ alert('Please fill in all fields.'); return; }
+
+  await setDoc(doc(db,'applicants',email), {name, status, date});
+
+  document.getElementById('saveMsg').style.display='block';
+  document.getElementById('saveMsg').textContent='✅ Saved to Firebase! Applicant can check their status now.';
+  setTimeout(()=>document.getElementById('saveMsg').style.display='none', 3000);
+  document.getElementById('inputName').value='';
+  document.getElementById('inputEmail').value='';
+  document.getElementById('inputStatus').value='pending';
+  document.getElementById('inputDate').value='';
+  loadApplicants();
+}
+
+window.deleteApplicant = async function(email){
+  if(!confirm('Remove this applicant?')) return;
+  await deleteDoc(doc(db,'applicants',email));
+  loadApplicants();
+}
+
+// Auto-load when logged in
+const origLogin = window.checkLogin;
+window.checkLogin = function(){
+  if(origLogin) origLogin();
+  setTimeout(loadApplicants, 500);
+}
+
+// Also load on page if already logged in
+document.addEventListener('DOMContentLoaded', ()=>{
+  setTimeout(()=>{
+    if(document.getElementById('adminPanel').style.display!=='none'){
+      loadApplicants();
+    }
+  }, 300);
+});
+</script>
+
 </body>
 </html>
