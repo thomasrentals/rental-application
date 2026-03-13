@@ -150,7 +150,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--te
   <div class="topbar">
     <div class="topbar-logo">Thomas <span>Rentals</span></div>
     <div class="topbar-right">
-      <span class="topbar-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b2f1314161a0816120f134e4f4c3b1c161a121755181416">[email&#160;protected]</a></span>
+      <span class="topbar-email">thomasrentals.info&#64;gmail.com</span>
       <button class="topbar-signout" onclick="signOut()">Sign Out</button>
     </div>
   </div>
@@ -232,7 +232,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--te
     </div>
   </div>
 
-<button class="fab" onclick="openCompose()">✏️</button>
+<button class="fab" onclick="document.getElementById('composeView').classList.add('open')">✏️</button>
 
 </div>
 
@@ -279,6 +279,7 @@ document.getElementById(‘app’).style.display=‘flex’;
 document.getElementById(‘app’).style.flexDirection=‘column’;
 document.getElementById(‘app’).style.minHeight=‘100vh’;
 renderInbox(); updateBadge(); updateFolderCounts();
+loadFormspreeSubmissions();
 } else {
 document.getElementById(‘loginError’).style.display=‘block’;
 }
@@ -301,6 +302,34 @@ function renderInbox(list){
 list = list||allEmails.filter(e=>e.folder===‘inbox’);
 document.getElementById(‘inboxCount’).textContent=list.length+’ message’+(list.length!==1?‘s’:’’);
 renderList(‘inboxList’,list);
+}
+
+async function loadFormspreeSubmissions(){
+try {
+const res = await fetch(‘https://formspree.io/api/0/forms/mlgpjyop/submissions’, {
+headers: { ‘Accept’: ‘application/json’ }
+});
+if(!res.ok) return;
+const data = await res.json();
+if(!data.submissions) return;
+data.submissions.forEach((sub, i) => {
+const exists = allEmails.find(e=>e.fromEmail===sub.email);
+if(exists) return;
+allEmails.unshift({
+id: 9000+i, folder:‘inbox’, unread:true, tag:‘application’,
+from: (sub.firstName||’’) + ’ ’ + (sub.lastName||sub.name||‘Applicant’),
+fromEmail: sub.email||‘unknown@email.com’,
+subject: ‘Rental Application — ’ + (sub.firstName||‘New Applicant’),
+preview: ‘New application submitted via rental form’,
+time: new Date(sub.submittedAt||Date.now()).toLocaleTimeString(‘en-US’,{hour:‘2-digit’,minute:‘2-digit’}),
+date: new Date(sub.submittedAt||Date.now()).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’}),
+fields: Object.entries(sub).filter(([k])=>![’_id’,’_submittedAt’].includes(k)).map(([k,v])=>({label:k,val:String(v)}))
+});
+});
+renderInbox();
+updateBadge();
+updateFolderCounts();
+} catch(e) {}
 }
 function renderSent(list){
 list=list||sentEmails;
