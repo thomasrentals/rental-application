@@ -135,7 +135,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--te
     <div class="login-logo">Thomas <span>Rentals</span></div>
     <div class="login-sub">Webmail — Staff Access Only</div>
     <input type="email" id="loginEmail" placeholder="Email address" value="thomasrentals.info@gmail.com"/>
-    <input type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div style="position:relative;margin-bottom:12px;">
+      <input type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding:13px 44px 13px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;color:white;outline:none;"/>
+      <span onclick="var i=document.getElementById('loginPass');i.type=i.type==='password'?'text':'password'" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;opacity:0.6;">👁</span>
+    </div>
     <button class="login-btn" onclick="doLogin()">Sign In →</button>
     <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
   </div>
