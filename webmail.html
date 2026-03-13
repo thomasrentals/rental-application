@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Thomas Rentals — Webmail</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0F1C2E;--navy-mid:#1A2E45;--gold:#C9A84C;--gold-light:#E8C97A;
+  --off-white:#F7F8FA;--text:#1A2E45;--text-muted:#6B7A8D;--border:#E2E8F0;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text);min-height:100vh;}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#0F1C2E 0%,#1A2E45 60%,#1e3a5f 100%);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:40px 32px;width:90%;max-width:380px;text-align:center;}
+.login-logo{font-family:‘DM Serif Display’,serif;font-size:26px;color:#fff;margin-bottom:4px;}
+.login-logo span{color:#E8C97A;}
+.login-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:28px;text-transform:uppercase;letter-spacing:0.08em;}
+.login-box input{width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;font-size:14px;font-family:‘DM Sans’,sans-serif;color:white;outline:none;margin-bottom:12px;}
+.login-box input::placeholder{color:rgba(255,255,255,0.3);}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#C9A84C,#E8C97A);color:#0F1C2E;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:‘DM Sans’,sans-serif;}
+.login-error{color:#FCA5A5;font-size:13px;margin-top:10px;display:none;}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:#0F1C2E;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.topbar-logo{font-family:‘DM Serif Display’,serif;font-size:18px;color:white;}
+.topbar-logo span{color:#E8C97A;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.topbar-email{font-size:11px;color:rgba(255,255,255,0.4);}
+.topbar-signout{padding:5px 12px;background:rgba(220,38,38,0.2);border:1px solid rgba(220,38,38,0.4);border-radius:20px;font-size:11px;font-weight:600;color:#FCA5A5;cursor:pointer;font-family:‘DM Sans’,sans-serif;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0F1C2E;border-top:1px solid rgba(255,255,255,0.1);display:flex;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 16px;font-size:10px;color:rgba(255,255,255,0.45);cursor:pointer;gap:4px;position:relative;}
+.nav-item.active{color:#E8C97A;}
+.nav-icon{font-size:22px;}
+.nav-badge{position:absolute;top:6px;right:calc(50% - 18px);background:#E8C97A;color:#0F1C2E;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:800;display:none;}
+
+/* VIEWS */
+.view{display:none;padding-bottom:80px;}
+.view.active{display:block;}
+.view-header{padding:16px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1px solid var(–border);}
+.view-title{font-size:18px;font-weight:700;}
+.view-count{font-size:12px;color:var(–text-muted);}
+
+/* SEARCH */
+.search-wrap{padding:10px 16px;background:white;border-bottom:1px solid var(–border);}
+.search-wrap input{width:100%;padding:9px 14px;background:var(–off-white);border:1px solid var(–border);border-radius:20px;font-size:14px;font-family:‘DM Sans’,sans-serif;outline:none;}
+
+/* EMAIL LIST */
+.email-item{background:white;border-bottom:1px solid var(–border);padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;}
+.email-item:active{background:#F0F4FF;}
+.eavatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0F1C2E,#1A2E45);display:flex;align-items:center;justify-content:center;color:#E8C97A;font-weight:700;font-size:18px;flex-shrink:0;}
+.einfo{flex:1;min-width:0;}
+.etop{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
+.esender{font-size:14px;font-weight:600;color:var(–text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
+.esender.bold{font-weight:800;}
+.etime{font-size:11px;color:var(–text-muted);flex-shrink:0;margin-left:8px;}
+.esubject{font-size:13px;color:var(–text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.epreview{font-size:12px;color:var(–text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.etag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:5px;}
+.tag-application{background:#FEF3C7;color:#92400E;}
+.tag-report{background:#EDE9FE;color:#5B21B6;}
+.tag-inquiry{background:#DCFCE7;color:#166534;}
+.tag-withdrawal{background:#FEE2E2;color:#991B1B;}
+.udot{width:9px;height:9px;background:#E8C97A;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.empty-state{padding:60px 20px;text-align:center;color:var(–text-muted);}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:0.35;}
+
+/* FOLDERS */
+.folder-list{padding:12px 16px;}
+.folder-item{background:white;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.ficon{width:44px;height:44px;border-radius:12px;background:var(–off-white);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.fname{font-size:15px;font-weight:600;}
+.fcount{font-size:12px;color:var(–text-muted);margin-top:2px;}
+.farrow{margin-left:auto;font-size:20px;color:var(–text-muted);}
+
+/* DETAIL */
+#detailView{display:none;position:fixed;inset:0;background:var(–off-white);z-index:200;overflow-y:auto;padding-bottom:100px;}
+.detail-topbar{background:#0F1C2E;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;}
+.back-btn{color:#E8C97A;font-size:17px;font-weight:700;cursor:pointer;background:none;border:none;font-family:‘DM Sans’,sans-serif;padding:4px 0;}
+.detail-bar-title{color:white;font-size:15px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dcard{background:white;margin:16px;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.dsubject{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:14px;}
+.dmeta{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(–border);margin-bottom:16px;}
+.davatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0F1C2E,#1A2E45);display:flex;align-items:center;justify-content:center;color:#E8C97A;font-weight:700;font-size:18px;flex-shrink:0;}
+.dfrom{font-size:14px;font-weight:700;}
+.dfrom-email{font-size:12px;color:var(–text-muted);margin-top:2px;}
+.ddate{font-size:11px;color:var(–text-muted);margin-left:auto;}
+.dfield{padding:10px 0;border-bottom:1px solid var(–off-white);}
+.dflabel{font-size:11px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:3px;}
+.dfval{font-size:14px;line-height:1.6;}
+.dactions{display:flex;gap:10px;margin:0 16px 16px;flex-wrap:wrap;}
+.dbtn{padding:12px 18px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:‘DM Sans’,sans-serif;}
+.dbtn-reply{background:#0F1C2E;color:white;}
+.dbtn-approve{background:#16A34A;color:white;}
+.dbtn-deny{background:#DC2626;color:white;}
+.dbtn-delete{background:white;color:var(–text-muted);border:1px solid var(–border);}
+
+/* COMPOSE */
+#composeView{display:none;position:fixed;inset:0;background:white;z-index:200;flex-direction:column;}
+#composeView.open{display:flex;}
+.compose-topbar{background:#0F1C2E;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+.compose-cancel{color:rgba(255,255,255,0.6);font-size:14px;cursor:pointer;}
+.compose-bar-title{color:white;font-size:16px;font-weight:600;}
+.compose-send{padding:8px 18px;background:linear-gradient(135deg,#C9A84C,#E8C97A);color:#0F1C2E;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:‘DM Sans’,sans-serif;}
+.cfield{padding:13px 16px;border-bottom:1px solid var(–border);display:flex;align-items:center;gap:10px;}
+.cfield label{font-size:13px;color:var(–text-muted);width:44px;flex-shrink:0;}
+.cfield input{flex:1;border:none;outline:none;font-size:15px;font-family:‘DM Sans’,sans-serif;color:var(–text);}
+.cbody{flex:1;padding:16px;}
+.cbody textarea{width:100%;height:280px;border:none;outline:none;resize:none;font-size:15px;font-family:‘DM Sans’,sans-serif;color:var(–text);line-height:1.7;}
+
+/* FAB */
+.fab{position:fixed;bottom:82px;right:18px;width:56px;height:56px;background:linear-gradient(135deg,#C9A84C,#E8C97A);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(201,168,76,0.5);z-index:99;border:none;}
+
+/* TOAST */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#0F1C2E;color:white;padding:11px 22px;border-radius:50px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+
+</head>
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Thomas <span>Rentals</span></div>
+    <div class="login-sub">Webmail — Staff Access Only</div>
+    <input type="email" id="loginEmail" placeholder="Email address" value="thomasrentals.info@gmail.com"/>
+    <input type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- APP -->
+
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">Thomas <span>Rentals</span></div>
+    <div class="topbar-right">
+      <span class="topbar-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b2f1314161a0816120f134e4f4c3b1c161a121755181416">[email&#160;protected]</a></span>
+      <button class="topbar-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- INBOX -->
+
+  <div class="view active" id="view-inbox">
+    <div class="view-header">
+      <span class="view-title">📥 Inbox</span>
+      <span class="view-count" id="inboxCount"></span>
+    </div>
+    <div class="search-wrap">
+      <input type="text" placeholder="🔍 Search emails..." oninput="searchEmails(this.value,'inbox')"/>
+    </div>
+    <div id="inboxList"></div>
+  </div>
+
+  <!-- SENT -->
+
+  <div class="view" id="view-sent">
+    <div class="view-header">
+      <span class="view-title">📤 Sent</span>
+      <span class="view-count" id="sentCount"></span>
+    </div>
+    <div id="sentList"></div>
+  </div>
+
+  <!-- FOLDERS -->
+
+  <div class="view" id="view-folders">
+    <div class="view-header"><span class="view-title">📁 Folders</span></div>
+    <div class="folder-list">
+      <div class="folder-item" onclick="openFolder('applications')">
+        <div class="ficon">🏠</div>
+        <div><div class="fname">Applications</div><div class="fcount" id="fc-applications">0 emails</div></div>
+        <div class="farrow">›</div>
+      </div>
+      <div class="folder-item" onclick="openFolder('reports')">
+        <div class="ficon">🚨</div>
+        <div><div class="fname">Reports</div><div class="fcount" id="fc-reports">0 emails</div></div>
+        <div class="farrow">›</div>
+      </div>
+      <div class="folder-item" onclick="openFolder('inquiries')">
+        <div class="ficon">💬</div>
+        <div><div class="fname">Inquiries</div><div class="fcount" id="fc-inquiries">0 emails</div></div>
+        <div class="farrow">›</div>
+      </div>
+      <div class="folder-item" onclick="openFolder('trash')">
+        <div class="ficon">🗑️</div>
+        <div><div class="fname">Trash</div><div class="fcount" id="fc-trash">0 emails</div></div>
+        <div class="farrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOLDER DETAIL -->
+
+  <div class="view" id="view-folderdetail">
+    <div class="view-header" style="gap:10px;">
+      <span style="font-size:22px;cursor:pointer;line-height:1;" onclick="backToFolders()">‹</span>
+      <span class="view-title" id="folderDetailTitle"></span>
+      <span class="view-count" id="folderDetailCount"></span>
+    </div>
+    <div id="folderDetailList"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-inbox" onclick="switchTab('inbox')" style="position:relative;">
+      <span class="nav-icon">📥</span><span>Inbox</span>
+      <span class="nav-badge" id="unreadBadge">0</span>
+    </div>
+    <div class="nav-item" id="nav-sent" onclick="switchTab('sent')">
+      <span class="nav-icon">📤</span><span>Sent</span>
+    </div>
+    <div class="nav-item" id="nav-folders" onclick="switchTab('folders')">
+      <span class="nav-icon">📁</span><span>Folders</span>
+    </div>
+  </div>
+
+<button class="fab" onclick="openCompose()">✏️</button>
+
+</div>
+
+<!-- DETAIL -->
+
+<div id="detailView">
+  <div class="detail-topbar">
+    <button class="back-btn" onclick="closeDetail()">‹ Back</button>
+    <span class="detail-bar-title" id="detailBarTitle"></span>
+  </div>
+  <div id="detailContent"></div>
+</div>
+
+<!-- COMPOSE -->
+
+<div id="composeView">
+  <div class="compose-topbar">
+    <span class="compose-cancel" onclick="closeCompose()">Cancel</span>
+    <span class="compose-bar-title">New Message</span>
+    <button class="compose-send" onclick="sendEmail()">Send ›</button>
+  </div>
+  <div class="cfield"><label>To</label><input type="email" id="composeTo" placeholder="recipient@email.com"/></div>
+  <div class="cfield"><label>Subj</label><input type="text" id="composeSubject" placeholder="Subject"/></div>
+  <div class="cbody"><textarea id="composeBody" placeholder="Write your message...&#10;&#10;Best regards,&#10;Thomas Rentals"></textarea></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+const PWD = ‘ThomasRentals2026!’;
+let allEmails = [
+{id:1,folder:‘inbox’,unread:true,tag:‘application’,from:‘Jane Cooper’,fromEmail:‘jane.cooper@gmail.com’,subject:‘Rental Application — 3BR Unit’,preview:‘I am very interested in the 3-bedroom unit…’,time:‘10:32 AM’,date:‘Mar 13, 2026’,fields:[{label:‘Full Name’,val:‘Jane Cooper’},{label:‘Email’,val:‘jane.cooper@gmail.com’},{label:‘Phone’,val:’(614) 555-0192’},{label:‘Move-In’,val:‘April 1, 2026’},{label:‘Monthly Income’,val:’$5,200’},{label:‘Address’,val:‘1402 Elm St, Columbus OH’},{label:‘Message’,val:‘I am very interested in the 3-bedroom unit. I have excellent rental history and references.’}]},
+{id:2,folder:‘inbox’,unread:true,tag:‘application’,from:‘Marcus Williams’,fromEmail:‘m.williams@yahoo.com’,subject:‘Application — 2BR Apartment’,preview:‘Looking for a quiet 2BR, no pets…’,time:‘9:15 AM’,date:‘Mar 13, 2026’,fields:[{label:‘Full Name’,val:‘Marcus Williams’},{label:‘Email’,val:‘m.williams@yahoo.com’},{label:‘Phone’,val:’(713) 555-0847’},{label:‘Move-In’,val:‘March 25, 2026’},{label:‘Monthly Income’,val:’$4,800’},{label:‘Address’,val:‘890 Oak Ave, Houston TX’},{label:‘Message’,val:‘Looking for a quiet 2BR, no pets, excellent references available.’}]},
+{id:3,folder:‘inbox’,unread:false,tag:‘inquiry’,from:‘Sarah Johnson’,fromEmail:‘sarah.j@outlook.com’,subject:‘Question about Application Fee’,preview:‘Is the $100 fee refundable if I come for viewing?’,time:‘Yesterday’,date:‘Mar 12, 2026’,fields:[{label:‘From’,val:‘Sarah Johnson’},{label:‘Email’,val:‘sarah.j@outlook.com’},{label:‘Message’,val:‘Hi, I submitted my application yesterday and wanted to confirm you received it. Also, is the $100 fee refundable if I come for the property viewing?’}]},
+{id:4,folder:‘inbox’,unread:false,tag:‘report’,from:‘System — Suspicious Activity’,fromEmail:‘system@thomasrentals.com’,subject:‘🚨 Report: Fake Documents Submitted’,preview:‘Applicant submitted altered pay stubs for unit 4B…’,time:‘Mar 11’,date:‘Mar 11, 2026’,fields:[{label:‘Reporter’,val:‘Anonymous’},{label:‘Type’,val:‘Fake Documents Submitted’},{label:‘Description’,val:‘An applicant submitted what appear to be altered pay stubs for unit 4B. The employer name does not match any known company.’}]},
+];
+let sentEmails = [];
+
+function doLogin(){
+if(document.getElementById(‘loginPass’).value===PWD){
+document.getElementById(‘loginScreen’).style.display=‘none’;
+document.getElementById(‘app’).style.display=‘flex’;
+document.getElementById(‘app’).style.flexDirection=‘column’;
+document.getElementById(‘app’).style.minHeight=‘100vh’;
+renderInbox(); updateBadge(); updateFolderCounts();
+} else {
+document.getElementById(‘loginError’).style.display=‘block’;
+}
+}
+function signOut(){
+document.getElementById(‘loginScreen’).style.display=‘flex’;
+document.getElementById(‘app’).style.display=‘none’;
+document.getElementById(‘loginPass’).value=’’;
+}
+
+function switchTab(tab){
+document.querySelectorAll(’.view’).forEach(v=>v.classList.remove(‘active’));
+document.querySelectorAll(’.nav-item’).forEach(n=>n.classList.remove(‘active’));
+document.getElementById(‘view-’+tab).classList.add(‘active’);
+document.getElementById(‘nav-’+tab).classList.add(‘active’);
+if(tab===‘sent’) renderSent();
+}
+
+function renderInbox(list){
+list = list||allEmails.filter(e=>e.folder===‘inbox’);
+document.getElementById(‘inboxCount’).textContent=list.length+’ message’+(list.length!==1?‘s’:’’);
+renderList(‘inboxList’,list);
+}
+function renderSent(list){
+list=list||sentEmails;
+document.getElementById(‘sentCount’).textContent=list.length+’ message’+(list.length!==1?‘s’:’’);
+renderList(‘sentList’,list);
+}
+function renderList(cid,list){
+const c=document.getElementById(cid);
+if(!list.length){c.innerHTML=’<div class="empty-state"><div class="empty-icon">✉️</div><p>No messages</p></div>’;return;}
+c.innerHTML=list.map(e=>` <div class="email-item" onclick="openDetail(${e.id})"> <div class="eavatar">${e.from[0]}</div> <div class="einfo"> <div class="etop"> <div class="esender ${e.unread?'bold':''}">${e.from}</div> <div class="etime">${e.time}</div> </div> <div class="esubject">${e.subject}</div> <div class="epreview">${e.preview||''}</div> ${e.tag?`<span class="etag tag-${e.tag}">${e.tag}</span>`:''} </div> ${e.unread?'<div class="udot"></div>':''} </div>`).join(’’);
+}
+
+function searchEmails(q,type){
+const src=type===‘inbox’?allEmails.filter(e=>e.folder===‘inbox’):sentEmails;
+const f=q?src.filter(e=>e.from.toLowerCase().includes(q.toLowerCase())||e.subject.toLowerCase().includes(q.toLowerCase())):src;
+type===‘inbox’?renderInbox(f):renderSent(f);
+}
+
+function openFolder(type){
+const map={applications:allEmails.filter(e=>e.tag===‘application’),reports:allEmails.filter(e=>e.tag===‘report’),inquiries:allEmails.filter(e=>e.tag===‘inquiry’),trash:allEmails.filter(e=>e.folder===‘trash’)};
+const titles={applications:‘🏠 Applications’,reports:‘🚨 Reports’,inquiries:‘💬 Inquiries’,trash:‘🗑️ Trash’};
+const list=map[type]||[];
+document.getElementById(‘folderDetailTitle’).textContent=titles[type]||type;
+document.getElementById(‘folderDetailCount’).textContent=list.length+’ messages’;
+renderList(‘folderDetailList’,list);
+document.querySelectorAll(’.view’).forEach(v=>v.classList.remove(‘active’));
+document.getElementById(‘view-folderdetail’).classList.add(‘active’);
+}
+function backToFolders(){
+document.querySelectorAll(’.view’).forEach(v=>v.classList.remove(‘active’));
+document.getElementById(‘view-folders’).classList.add(‘active’);
+}
+function updateFolderCounts(){
+document.getElementById(‘fc-applications’).textContent=allEmails.filter(e=>e.tag===‘application’).length+’ emails’;
+document.getElementById(‘fc-reports’).textContent=allEmails.filter(e=>e.tag===‘report’).length+’ emails’;
+document.getElementById(‘fc-inquiries’).textContent=allEmails.filter(e=>e.tag===‘inquiry’).length+’ emails’;
+document.getElementById(‘fc-trash’).textContent=allEmails.filter(e=>e.folder===‘trash’).length+’ emails’;
+}
+
+function openDetail(id){
+const e=[…allEmails,…sentEmails].find(x=>x.id===id);
+if(!e) return;
+e.unread=false; updateBadge(); renderInbox();
+document.getElementById(‘detailBarTitle’).textContent=e.subject;
+const tb={application:’#FEF3C7’,report:’#EDE9FE’,inquiry:’#DCFCE7’,withdrawal:’#FEE2E2’};
+const tc={application:’#92400E’,report:’#5B21B6’,inquiry:’#166534’,withdrawal:’#991B1B’};
+const fields=(e.fields||[]).map(f=>`<div class="dfield"><div class="dflabel">${f.label}</div><div class="dfval">${f.val}</div></div>`).join(’’);
+const isInbox=e.folder===‘inbox’;
+document.getElementById(‘detailContent’).innerHTML=` <div class="dcard"> ${e.tag?`<span style="display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;background:${tb[e.tag]||'#eee'};color:${tc[e.tag]||'#333'};margin-bottom:12px;text-transform:uppercase;">${e.tag}</span>`:''} <div class="dsubject">${e.subject}</div> <div class="dmeta"> <div class="davatar">${e.from[0]}</div> <div><div class="dfrom">${e.from}</div><div class="dfrom-email">${e.fromEmail}</div></div> <div class="ddate">${e.date}</div> </div> ${fields} </div> ${isInbox?`<div class="dactions">
+<button class="dbtn dbtn-reply" onclick="replyTo(${id})">↩ Reply</button>
+${e.tag===‘application’?`<button class="dbtn dbtn-approve" onclick="approveApplicant(${id})">✅ Approve</button><button class="dbtn dbtn-deny" onclick="denyApplicant(${id})">❌ Deny</button>`:’’}
+<button class="dbtn dbtn-delete" onclick="deleteEmail(${id})">🗑 Delete</button>
+</div>`:''}`;
+document.getElementById(‘detailView’).style.display=‘block’;
+}
+function closeDetail(){document.getElementById(‘detailView’).style.display=‘none’;}
+function deleteEmail(id){
+const e=allEmails.find(x=>x.id===id);
+if(e){e.folder=‘trash’;}
+closeDetail(); renderInbox(); updateFolderCounts();
+showToast(‘Moved to trash’);
+}
+
+// Firebase loaded via module below
+window.approveApplicant = async function(id){
+const e = allEmails.find(x=>x.id===id);
+if(!e) return;
+const email = e.fromEmail.toLowerCase();
+const today = new Date().toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’});
+try{
+await window.fbSetDoc(window.fbDoc(window.db,‘applicants’,email),{name:e.from, status:‘approved’, date:today});
+showToast(‘✅ Approved & saved! Applicant can see their status now.’);
+} catch(err){ showToast(‘✅ Marked Approved — Firebase error, check admin portal’); }
+}
+window.denyApplicant = async function(id){
+const e = allEmails.find(x=>x.id===id);
+if(!e) return;
+const email = e.fromEmail.toLowerCase();
+const today = new Date().toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’});
+try{
+await window.fbSetDoc(window.fbDoc(window.db,‘applicants’,email),{name:e.from, status:‘denied’, date:today});
+showToast(‘❌ Denied & saved! Applicant can see their status now.’);
+} catch(err){ showToast(‘❌ Marked Denied — Firebase error, check admin portal’); }
+}
+
+function openCompose(){document.getElementById(‘composeView’).classList.add(‘open’);}
+function closeCompose(){
+document.getElementById(‘composeView’).classList.remove(‘open’);
+document.getElementById(‘composeTo’).value=’’;
+document.getElementById(‘composeSubject’).value=’’;
+document.getElementById(‘composeBody’).value=’’;
+}
+function replyTo(id){
+const e=allEmails.find(x=>x.id===id);
+if(!e) return;
+closeDetail();
+document.getElementById(‘composeTo’).value=e.fromEmail;
+document.getElementById(‘composeSubject’).value=‘Re: ‘+e.subject;
+document.getElementById(‘composeBody’).value=’\n\n──────────\nBest regards,\nThomas Rentals’;
+openCompose();
+}
+function sendEmail(){
+const to=document.getElementById(‘composeTo’).value.trim();
+const sub=document.getElementById(‘composeSubject’).value.trim();
+const body=document.getElementById(‘composeBody’).value.trim();
+if(!to||!sub||!body){showToast(‘Please fill all fields’);return;}
+sentEmails.unshift({id:Date.now(),folder:‘sent’,unread:false,from:‘Thomas Rentals’,fromEmail:‘thomasrentals.info@gmail.com’,subject:sub,preview:body.substring(0,60)+’…’,time:‘Just now’,date:new Date().toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’}),fields:[{label:‘To’,val:to},{label:‘Message’,val:body}]});
+closeCompose(); showToast(‘✅ Saved to Sent!’);
+}
+
+function updateBadge(){
+const n=allEmails.filter(e=>e.unread&&e.folder===‘inbox’).length;
+const b=document.getElementById(‘unreadBadge’);
+b.textContent=n; b.style.display=n>0?‘block’:‘none’;
+}
+function showToast(msg){
+const t=document.getElementById(‘toast’);
+t.textContent=msg; t.classList.add(‘show’);
+setTimeout(()=>t.classList.remove(‘show’),3000);
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBxfpcwENzs6_Eo_pXFsdEiUTxB8MoG-qE",
+  authDomain: "thomas-rentals.firebaseapp.com",
+  projectId: "thomas-rentals",
+  storageBucket: "thomas-rentals.firebasestorage.app",
+  messagingSenderId: "631219269923",
+  appId: "1:631219269923:web:0e82e63b830ee8887adc96"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+window.db = db;
+window.fbDoc = doc;
+window.fbSetDoc = setDoc;
+</script>
+
+</body>
+</html>
