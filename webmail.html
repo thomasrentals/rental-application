@@ -139,7 +139,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--te
       <input type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding:13px 44px 13px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;color:white;outline:none;"/>
       <span onclick="var i=document.getElementById('loginPass');i.type=i.type==='password'?'text':'password'" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;opacity:0.6;">👁</span>
     </div>
-    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <button class="login-btn" onclick="(function(){var p=document.getElementById('loginPass').value;if(p==='ThomasRentals2026!'){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('app').style.flexDirection='column';document.getElementById('app').style.minHeight='100vh';if(typeof renderInbox==='function'){renderInbox();updateBadge();updateFolderCounts();}}else{document.getElementById('loginError').style.display='block';}})()">Sign In →</button>
     <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
   </div>
 </div>
